@@ -1,17 +1,23 @@
 from flask import Flask, render_template, request, jsonify
 import os
+from data_processor import process_excel_file  # Import the data processing function
+from db_loader import load_to_sql  # Import the database loader function
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'src/uploads'
+# Configure upload folder
+UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Google Cloud SQL Connection String
+DB_CONNECTION_STRING = 'postgresql://postgres:dadu.007@34.93.188.48:5432/airbnb-master'
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 @app.route('/')
 def index():
-    return render_template('./index/index.html')
+    return render_template('index/index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -27,7 +33,16 @@ def upload_file():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
 
-        return jsonify({'message': 'File uploaded successfully'}), 200
+        try:
+            cleaned_data = process_excel_file(file_path)
+
+            # Load the cleaned data into Google Cloud SQL
+            table_name = os.path.splitext(file.filename)[0]  
+            load_to_sql(cleaned_data, table_name, DB_CONNECTION_STRING)
+
+            return jsonify({'message': 'File uploaded and loaded into Google Cloud SQL successfully'}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error processing file: {str(e)}'}), 500
 
     return jsonify({'message': 'Invalid file format. Please upload an Excel file.'}), 400
 

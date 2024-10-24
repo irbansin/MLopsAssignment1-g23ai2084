@@ -1,0 +1,21 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Debug with pipenv",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",  // Replace with the entry point of your app
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/Pipfile",
+            "env": {
+                "PIPENV_PYTHON": "python"  // Optional, to ensure pipenv is used
+            },
+            // "envFile": "${workspaceFolder}/.env"  // If you're using environment variables
+        }
+        
+    ]
+}
