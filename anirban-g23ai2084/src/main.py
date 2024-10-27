@@ -36,7 +36,7 @@ def upload_file():
         try:
             cleaned_data = process_excel_file(file_path)
 
-            # Load the cleaned data into Google Cloud SQL
+            # Load the cleaned data into Google Cloud file_pathSQL
             table_name = os.path.splitext(file.filename)[0]  
             load_to_sql(cleaned_data, table_name, DB_CONNECTION_STRING)
 

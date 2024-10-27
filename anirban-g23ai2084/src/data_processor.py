@@ -14,5 +14,6 @@ def process_excel_file(file_path):
 
 
     # We can perform other cleaning tasks here
+    # We shall analyse what logic others have used for data cleaning and choose the best one here.
 
     return df_cleaned
