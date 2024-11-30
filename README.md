@@ -11,4 +11,9 @@ Akkalesh SP
 Radhika Natarajan
 
 
-Listing Airbnb Dataset : https://docs.google.com/spreadsheets/d/11hPS9MElKpx63n6mIkwKWI63ZStMzupMQXRgFt9_Plo/edit?gid=1991171715#gid=1991171715
+To run the project
+Run the following commands in root
+```
+pipenv shell
+./start_server.sh
+```
