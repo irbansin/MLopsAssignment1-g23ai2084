@@ -1,3 +1,4 @@
+import asyncio
 from flask import Flask, render_template, request, jsonify
 import os
 from data_processor import process_excel_file  # Import the data processing function
@@ -14,8 +15,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Google Cloud SQL Connection String
 DB_CONNECTION_STRING = 'postgresql://postgres:dadu.007@34.93.188.48:5432/airbnb-master'
 
-# finalData = etl()
-# load_to_sql(finalData, 'master', DB_CONNECTION_STRING)
+etlRunning = False
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -54,6 +54,17 @@ def upload_file():
             return jsonify({'message': f'Error processing file: {str(e)}'}), 500
 
     return jsonify({'message': 'Invalid file format. Please upload an Excel file.'}), 400
+
+@app.route('/startetl')
+async def startetl():
+    try:
+        finalData = asyncio.create_task(etl())
+        uploadResponse = asyncio.create_task(load_to_sql(finalData, 'master', DB_CONNECTION_STRING))
+        #TODO: handle multiple clicks
+        return jsonify({'message': 'ETL process started. Please do not click again'}), 200
+    
+    except Exception as e:
+        return jsonify({'message': f'Error processing file: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
