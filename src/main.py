@@ -1,8 +1,10 @@
 import asyncio
-from flask import Flask, render_template, request, jsonify
+
+import pandas as pd
+from flask import Flask, render_template, request, jsonify 
 import os
-from data_processor import process_excel_file  # Import the data processing function
-from db_loader import load_to_sql  # Import the database loader function
+from data_processor import convert_to_dataframe, train_model  # Import the data processing function
+from enums import TrainingModels
 from etl import etl
 
 
@@ -38,33 +40,26 @@ def upload_file():
     if file.filename == '':
         return jsonify({'message': 'No selected file'}), 400
 
-    if file and file.filename.endswith('.xlsx'):
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(file_path)
+   
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(file_path)
+    df = pd.DataFrame()
 
-        try:
-            cleaned_data = process_excel_file(file_path)
+    try:
+        df = convert_to_dataframe(file_path) # takes in file and trains a model
+        train_model(df, TrainingModels.RandomForestRegressor)
 
-            # Load the cleaned data into Google Cloud file_pathSQL
-            table_name = os.path.splitext(file.filename)[0]  
-            load_to_sql(cleaned_data, table_name, DB_CONNECTION_STRING)
-
-            return jsonify({'message': 'File uploaded and loaded into Google Cloud SQL successfully'}), 200
-        except Exception as e:
-            return jsonify({'message': f'Error processing file: {str(e)}'}), 500
+        return jsonify({'Model being Trained'}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error processing file: {str(e)}'}), 500
+    
 
     return jsonify({'message': 'Invalid file format. Please upload an Excel file.'}), 400
 
-@app.route('/startetl')
-async def startetl():
-    try:
-        finalData = asyncio.create_task(etl())
-        uploadResponse = asyncio.create_task(load_to_sql(finalData, 'master', DB_CONNECTION_STRING))
-        #TODO: handle multiple clicks
-        return jsonify({'message': 'ETL process started. Please do not click again'}), 200
-    
-    except Exception as e:
-        return jsonify({'message': f'Error processing file: {str(e)}'}), 500
+@app.route('/getPrediction', methods=['POST'])
+def predict():
+    mvValue = 0
+    return mvValue
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
