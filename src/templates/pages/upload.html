@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Excel File</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='styles/index.css')}}" type="text/css">
+    <link rel="stylesheet" href="{{url_for('static', filename='styles/style.css')}}" type="text/css">
 
 
 </head>
@@ -16,12 +16,15 @@
         <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
             <div class="upload-area" id="uploadArea">
                 <p>Drag & Drop your Excel file here or click to select</p>
-                <input type="file" name="file" id="fileInput" accept=".xlsx">
+                <input type="file" name="file" id="fileInput" accept=".xlsx, .csv">
             </div>
             <div class="loader" id="loader"></div> <!-- Loader -->
             <button type="submit" class="submit-btn">Upload File</button>
         </form>
+
     </div>
+
+    <div id="feature-input" class="dynamic-form-container"></div>
 
 
     <script src="{{url_for('static', filename='js/upload.js')}}"></script>

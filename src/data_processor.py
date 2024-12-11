@@ -22,10 +22,26 @@ def convert_to_dataframe(file_path):
 
     return df
 
+def prepareData(data) : 
+    X = data.iloc[:, :-1]  # Features
+    y = data.iloc[:, -1] # Target variable
+    
+    print(X,y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+    # Fit and transform the training data
+    X_train = scaler.fit_transform(X_train)
+
+    # Transform the test data using the same scaler
+    X_test = scaler.transform(X_test)
+
+    
+    
+    return X_train, X_test, y_train, y_test
 
 def train_model(data, modelType):
-    X = pd.DataFrame()
-    y = pd.DataFrame()
+
     match modelType:
         case TrainingModels.RandomForestRegressor:
             # Separate features and target
@@ -43,26 +59,18 @@ def train_model(data, modelType):
             
 
             # Save the model
-            trained_model = joblib.dump(model, 'model/trained_model.pkl')
-
-            # Save the scaler (if used)
-            trained_Scaler = joblib.dump(scaler, 'model/scaler.pkl')
-    return trained_model, trained_Scaler
+            joblib.dump(model, 'model/trained_model.pkl')
 
 
+    return X_train.shape[1]
 
-def prepareData(data) : 
-    X = data.iloc[:, :-1]  # Features
-    y = data.iloc[:, -1] # Target variable
-    
-    print(X,y)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+def predict(X_test) :
+    # Load the model
+    loaded_model = joblib.load('model/trained_model.pkl')
 
+    # Test prediction
+    sample_data = X_test[0].reshape(1, -1)  # Use a test sample
+    predicted_mv = loaded_model.predict(sample_data)
+    print(f"Predicted MV: {predicted_mv[0]}")
+    return predicted_mv[0]
 
-    # Fit and transform the training data
-    X_train = scaler.fit_transform(X_train)
-
-    # Transform the test data using the same scaler
-    X_test = scaler.transform(X_test)
-    
-    return X_train, X_test, y_train, y_test

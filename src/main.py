@@ -2,7 +2,7 @@
 import pandas as pd
 from flask import Flask, render_template, request, jsonify 
 import os
-from data_processor import convert_to_dataframe, train_model  # Import the data processing function
+from data_processor import convert_to_dataframe, predict, train_model  # Import the data processing function
 from enums import TrainingModels
 
 
@@ -45,18 +45,22 @@ def upload_file():
 
         try:
             df = convert_to_dataframe(file_path) # takes in file and trains a model
-            model_path = train_model(df, TrainingModels.RandomForestRegressor)
+            numberOfInputs = train_model(df, TrainingModels.RandomForestRegressor)
 
-            return jsonify({'Model Trained': model_path}), 200
+            return jsonify({'message': {'x_columns': numberOfInputs}}), 200
         except Exception as e:
             return jsonify({'message': f'Error processing file: {str(e)}'}), 500
     except:
         return jsonify({'message': 'Invalid file format. Please upload an Excel file.'}), 400
 
 @app.route('/getPrediction', methods=['POST'])
-def predict():
-    mvValue = 0
-    return mvValue
+def getPrediction():
+    try:
+        form_data = request.form.to_dict()
+        mvValue = predict(form_data)
+        return mvValue
+    except Exception as e:
+        return jsonify({'message': f'Error Predicting MV value: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
