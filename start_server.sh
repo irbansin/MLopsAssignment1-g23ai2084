@@ -6,6 +6,7 @@ fi
 
 
 echo "Installing dependencies..."
+pipenv shell
 pipenv install
 
 echo "Starting Python server..."
