@@ -1,8 +1,14 @@
 import pandas as pd
 from enums import TrainingModels
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
+import joblib
+
+scaler = StandardScaler()
 
 def convert_to_dataframe(file_path):
-    df
+    df = pd.DataFrame()
     # Read the Excel file
     try:
         if file_path.endswith('.xlsx'):
@@ -18,14 +24,45 @@ def convert_to_dataframe(file_path):
 
 
 def train_model(data, modelType):
+    X = pd.DataFrame()
+    y = pd.DataFrame()
     match modelType:
         case TrainingModels.RandomForestRegressor:
             # Separate features and target
-            X = data.iloc[:, :-1]  # Features
-            y = data.iloc[:, -1] # Target variable
+            X_train, X_test, y_train, y_test = prepareData(data)
+
+            # Initialize the model
+            model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+            # Train the model
+            model.fit(X_train, y_train)
+
+            # Evaluate the model
+            score = model.score(X_test, y_test)
+            print(f"Model R^2 Score: {score}")
             
-            print(X,y)
+
+            # Save the model
+            trained_model = joblib.dump(model, 'model/trained_model.pkl')
+
+            # Save the scaler (if used)
+            trained_Scaler = joblib.dump(scaler, 'model/scaler.pkl')
+    return trained_model, trained_Scaler
 
 
 
+def prepareData(data) : 
+    X = data.iloc[:, :-1]  # Features
+    y = data.iloc[:, -1] # Target variable
+    
+    print(X,y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+
+    # Fit and transform the training data
+    X_train = scaler.fit_transform(X_train)
+
+    # Transform the test data using the same scaler
+    X_test = scaler.transform(X_test)
+    
+    return X_train, X_test, y_train, y_test

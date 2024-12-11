@@ -42,13 +42,12 @@ def upload_file():
     
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
-        df = pd.DataFrame()
 
         try:
             df = convert_to_dataframe(file_path) # takes in file and trains a model
-            train_model(df, TrainingModels.RandomForestRegressor)
+            model_path = train_model(df, TrainingModels.RandomForestRegressor)
 
-            return jsonify({'Model being Trained'}), 200
+            return jsonify({'Model Trained': model_path}), 200
         except Exception as e:
             return jsonify({'message': f'Error processing file: {str(e)}'}), 500
     except:
