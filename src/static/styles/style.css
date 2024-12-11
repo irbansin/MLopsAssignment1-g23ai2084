@@ -118,6 +118,34 @@ h1 {
     display: inline-block;
 }
 
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+    gap: 16px; /* Space between items */
+    margin: 16px 0; /* Optional margin */
+}
+
+.grid-item {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 4px; /* Spacing between label and input */
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; 
+    margin-top: 16px;
+}
+
+button {
+    padding: 10px 20px; 
+    font-size: 16px; 
+    cursor: pointer; 
+}
+
 
 @keyframes spin {
     0% { transform: rotate(0deg); }

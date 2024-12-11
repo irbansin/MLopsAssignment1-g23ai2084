@@ -24,6 +24,8 @@ def convert_to_dataframe(file_path):
     return df
 
 def prepareData(data) : 
+    data = pd.DataFrame(data)
+    data = data.select_dtypes(include=['number'])
     X = data.iloc[:, :-1]  # Features
     y = data.iloc[:, -1] # Target variable
     

@@ -58,6 +58,9 @@ async function createInputElements(qty) {
     let featureInput = document.querySelector('#feature-input');
     featureInput.innerHTML = '';
 
+    let gridContainer = document.createElement('div');
+    gridContainer.className = 'grid-container';
+
     let predictForm = document.createElement('form');
     predictForm.className = 'dynamic-form';
 
@@ -65,20 +68,33 @@ async function createInputElements(qty) {
         let label = document.createElement('label');
         label.setAttribute('for', `field-${i}`);
         label.textContent = `Field ${i}:`;
-
+    
         let input = document.createElement('input');
         input.type = 'number';
+        input.step = '0.01'
         input.name = `field-${i}`;
         input.id = `field-${i}`;
-
-        predictForm.appendChild(label);
-        predictForm.appendChild(input);
+    
+        // Wrap label and input in a single grid item
+        let gridItem = document.createElement('div');
+        gridItem.className = 'grid-item';
+        gridItem.appendChild(label);
+        gridItem.appendChild(input);
+    
+        gridContainer.appendChild(gridItem);
     }
+    predictForm.appendChild(gridContainer);
 
+    // Create the submit button
     let submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.textContent = 'Submit';
-    predictForm.appendChild(submitButton);
+
+    let buttonContainer = document.createElement('div');
+    buttonContainer.className = 'button-container';
+    buttonContainer.appendChild(submitButton);
+
+    predictForm.appendChild(buttonContainer);
 
     featureInput.appendChild(predictForm);
 
