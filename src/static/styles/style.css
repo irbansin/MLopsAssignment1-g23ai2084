@@ -111,6 +111,12 @@ h1 {
     background-color: #0056b3;
 }
 
+.mv-value {
+    font-size: x-large;
+    font-weight: 400;
+    margin-top: 55px;
+    display: inline-block;
+}
 
 
 @keyframes spin {

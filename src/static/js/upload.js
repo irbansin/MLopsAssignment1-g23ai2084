@@ -22,7 +22,7 @@ uploadArea.addEventListener('drop', (e) => {
 
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-        fileInput.files = files; 
+        fileInput.files = files;
     }
 });
 
@@ -41,25 +41,25 @@ uploadForm.addEventListener('submit', (e) => {
         method: 'POST',
         body: formData,
     })
-    .then(response => response.json())
-    .then(data => {
-        loader.style.display = 'none';
+        .then(response => response.json())
+        .then(data => {
+            loader.style.display = 'none';
 
-        let columns = data.message.x_columns;
-        createInputElements(columns);
-    })
-    .catch(error => {
-        loader.style.display = 'none';
-        alert('File upload failed: '+error);
-    });
+            let columns = data.message.x_columns;
+            createInputElements(columns);
+        })
+        .catch(error => {
+            loader.style.display = 'none';
+            alert('File upload failed: ' + error);
+        });
 });
 
-function createInputElements(qty) {
+async function createInputElements(qty) {
     let featureInput = document.querySelector('#feature-input');
     featureInput.innerHTML = '';
 
-    let form = document.createElement('form');
-    form.className = 'dynamic-form';
+    let predictForm = document.createElement('form');
+    predictForm.className = 'dynamic-form';
 
     for (let i = 1; i <= qty; i++) {
         let label = document.createElement('label');
@@ -71,15 +71,39 @@ function createInputElements(qty) {
         input.name = `field-${i}`;
         input.id = `field-${i}`;
 
-        form.appendChild(label);
-        form.appendChild(input);
+        predictForm.appendChild(label);
+        predictForm.appendChild(input);
     }
 
     let submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.textContent = 'Submit';
-    form.appendChild(submitButton);
+    predictForm.appendChild(submitButton);
 
-    featureInput.appendChild(form);
+    featureInput.appendChild(predictForm);
 
+    predictForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(predictForm);
+
+        loader.style.display = 'block';
+
+        fetch('/getPrediction', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                loader.style.display = 'none';
+
+                let mvValue = data.message.mvValue;
+                mvValueDiv = document.querySelector('#mvvalue')
+                mvValueDiv.innerHTML = mvValue.toFixed(2)
+            })
+            .catch(error => {
+                loader.style.display = 'none';
+                alert('File upload failed: ' + error);
+            });
+    })
 }

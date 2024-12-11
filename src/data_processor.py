@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from enums import TrainingModels
 from sklearn.model_selection import train_test_split
@@ -6,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 
 scaler = StandardScaler()
-
+ 
 def convert_to_dataframe(file_path):
     df = pd.DataFrame()
     # Read the Excel file
@@ -64,12 +65,12 @@ def train_model(data, modelType):
 
     return X_train.shape[1]
 
-def predict(X_test) :
+def predictMV(data) :
     # Load the model
     loaded_model = joblib.load('model/trained_model.pkl')
-
+    sample_data = [list(data)]
     # Test prediction
-    sample_data = X_test[0].reshape(1, -1)  # Use a test sample
+    # sample_data = X_test.reshape(1, -1)  # Use a test sample
     predicted_mv = loaded_model.predict(sample_data)
     print(f"Predicted MV: {predicted_mv[0]}")
     return predicted_mv[0]

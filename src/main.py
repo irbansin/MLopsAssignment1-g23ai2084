@@ -2,7 +2,7 @@
 import pandas as pd
 from flask import Flask, render_template, request, jsonify 
 import os
-from data_processor import convert_to_dataframe, predict, train_model  # Import the data processing function
+from data_processor import convert_to_dataframe, predictMV, train_model  # Import the data processing function
 from enums import TrainingModels
 
 
@@ -57,8 +57,10 @@ def upload_file():
 def getPrediction():
     try:
         form_data = request.form.to_dict()
-        mvValue = predict(form_data)
-        return mvValue
+        featuresTuple = list(form_data.values())
+        featuresTupleRectified = [float(item if item != '' else '0') for item in featuresTuple]
+        mvValue = predictMV(featuresTupleRectified)
+        return  jsonify({'message': {'mvValue': mvValue}}), 200
     except Exception as e:
         return jsonify({'message': f'Error Predicting MV value: {str(e)}'}), 500
 
